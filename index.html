@@ -6,7 +6,7 @@
   <title>Image → PDF — Smooth & Mobile Friendly</title>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
@@ -15,19 +15,14 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#071129 0%, #071021 45%, #071021 100%);color:#e6eef6}
-    .wrap{max-width:980px;margin:32px auto;padding:20px}
+    .wrap{max-width:960px;margin:32px auto;padding:20px}
 
-    .hero{display:flex;gap:20px;align-items:center;padding:22px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);}
-    .hero-left{flex:1}
-    .title{font-size:24px;font-weight:700;margin:0 0 8px 0;letter-spacing:-0.2px}
+    .hero{padding:22px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);text-align:center}
+    .title{font-size:26px;font-weight:700;margin:0 0 8px 0;letter-spacing:-0.2px}
     .lead{color:var(--muted);margin:0 0 14px 0;font-weight:300}
-    .cta{display:flex;gap:10px;flex-wrap:wrap}
+    .cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
     .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071021;padding:10px 16px;border-radius:12px;border:0;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(96,165,250,0.12)}
     .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent2)}
-
-    .hero-right{width:240px;display:flex;align-items:center;justify-content:center}
-    .device{width:180px;height:300px;border-radius:18px;background:linear-gradient(180deg,#071129 0,#06101f 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;padding:12px}
-    .brand{font-family:'Rubik', 'Poppins', sans-serif;font-weight:700;font-size:28px;letter-spacing:1px;background:linear-gradient(90deg,#ffd54a,#ff8a65,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
 
     .card{margin-top:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
 
@@ -46,16 +41,11 @@
 
     footer{color:var(--muted);text-align:center;margin-top:18px;font-size:13px}
 
-    /* responsive */
     @media (max-width:780px){
-      .hero{flex-direction:column;align-items:flex-start}
-      .hero-right{width:140px}
-      .device{width:140px;height:200px}
-      .brand{font-size:20px}
       .wrap{padding:12px}
+      .title{font-size:22px}
     }
 
-    /* subtle hover */
     .btn:hover{transform:translateY(-2px)}
     .tiny:hover{background:rgba(255,255,255,0.04)}
 
@@ -64,16 +54,11 @@
 <body>
   <div class="wrap">
     <div class="hero">
-      <div class="hero-left">
-        <h1 class="title">Convert Images to PDF — Fast & Private</h1>
-        <p class="lead">Drag & drop photos, reorder pages, and download a single PDF — everything runs locally in your browser. No upload, no account.</p>
-        <div class="cta">
-          <button id="openFile" class="btn">Select Images</button>
-          <button id="demo" class="btn ghost">Try Demo Images</button>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="device"><div class="brand">HUMAN X</div></div>
+      <h1 class="title">Convert Images to PDF — Fast & Private</h1>
+      <p class="lead">Drag & drop photos, reorder pages, and download a single PDF — everything runs locally in your browser. No upload, no account.</p>
+      <div class="cta">
+        <button id="openFile" class="btn">Select Images</button>
+        <button id="demo" class="btn ghost">Try Demo Images</button>
       </div>
     </div>
 
@@ -114,11 +99,9 @@
     <footer>Made with care — mobile-friendly • Private • Fast</footer>
   </div>
 
-  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
-    // Elements
     const fileInput = document.getElementById('file');
     const drop = document.getElementById('drop');
     const thumbs = document.getElementById('thumbs');
@@ -131,15 +114,12 @@
 
     let images = [];
 
-    // helpers
     const pxToMm = px => px * 25.4 / 96;
     const safeFilename = name => name.replace(/[^a-z0-9-_\.]/ig, '_') || 'images-to-pdf';
 
-    // open file picker
     openFileBtn.addEventListener('click', () => fileInput.click());
     demoBtn.addEventListener('click', addDemoImages);
 
-    // drag & drop
     ['dragenter','dragover','dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
     drop.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
 
@@ -161,7 +141,6 @@
         el.innerHTML = `<img src="${img.data}" alt="${img.name}"><div class='name'>${img.name}</div><div class='row'><button class='tiny' data-idx='${idx}' data-action='up'>⬆</button><button class='tiny' data-idx='${idx}' data-action='down'>⬇</button><button class='tiny' data-idx='${idx}' data-action='remove'>✖</button></div>`;
         thumbs.appendChild(el);
       });
-      // attach
       thumbs.querySelectorAll('button').forEach(b => b.addEventListener('click', thumbAction));
     }
 
@@ -218,16 +197,13 @@
 
     convertBtn.addEventListener('click', convertToPdf);
 
-    // demo images (small colored placeholders)
     function addDemoImages(){
       images = [];
-      for(let i=1;i<=3;i++) images.push({name:`demo-${i}.png`, data:`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='600' height='800'><rect width='100%' height='100%' fill='${i%2?"%2360a5fa":"%236ee7b7"}'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Rubik, Poppins, Arial' font-size='48' fill='white'>Demo ${i}</text></svg>`)}`});
+      for(let i=1;i<=3;i++) images.push({name:`demo-${i}.png`, data:`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='600' height='800'><rect width='100%' height='100%' fill='${i%2?"%2360a5fa":"%236ee7b7"}'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins, Arial' font-size='48' fill='white'>Demo ${i}</text></svg>`)}`});
       renderThumbs();
     }
 
-    // small touch usability: focus file input when drop clicked
     drop.addEventListener('click', () => fileInput.click());
-
   </script>
 </body>
 </html>
