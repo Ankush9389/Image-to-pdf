@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Image → PDF — Smooth & Mobile Friendly</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f172a; --card:#0b1220; --muted:#94a3b8; --accent:#6ee7b7; --accent2:#60a5fa; --glass: rgba(255,255,255,0.04);
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071129 0%, #071021 45%, #071021 100%);color:#e6eef6}
+    .wrap{max-width:980px;margin:32px auto;padding:20px}
+
+    .hero{display:flex;gap:20px;align-items:center;padding:22px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);}
+    .hero-left{flex:1}
+    .title{font-size:24px;font-weight:700;margin:0 0 8px 0;letter-spacing:-0.2px}
+    .lead{color:var(--muted);margin:0 0 14px 0;font-weight:300}
+    .cta{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071021;padding:10px 16px;border-radius:12px;border:0;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(96,165,250,0.12)}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent2)}
+
+    .hero-right{width:240px;display:flex;align-items:center;justify-content:center}
+    .device{width:180px;height:300px;border-radius:18px;background:linear-gradient(180deg,#071129 0,#06101f 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;padding:12px}
+    .brand{font-family:'Rubik', 'Poppins', sans-serif;font-weight:700;font-size:28px;letter-spacing:1px;background:linear-gradient(90deg,#ffd54a,#ff8a65,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
+
+    .card{margin-top:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+
+    .drop{border-radius:12px;padding:18px;border:2px dashed rgba(255,255,255,0.04);display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;min-height:140px;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .drop .hint{color:var(--muted);font-size:14px}
+    .small{color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    input[type=file]{display:none}
+    .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .thumb{width:110px;padding:8px;background:var(--glass);border-radius:10px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;align-items:center;gap:8px}
+    .thumb img{width:100%;height:78px;object-fit:cover;border-radius:6px}
+    .thumb .name{font-size:12px;color:var(--muted);text-align:center;word-break:break-word}
+    .thumb .row{display:flex;gap:6px}
+    .tiny{padding:6px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--muted);font-size:12px;cursor:pointer}
+
+    footer{color:var(--muted);text-align:center;margin-top:18px;font-size:13px}
+
+    /* responsive */
+    @media (max-width:780px){
+      .hero{flex-direction:column;align-items:flex-start}
+      .hero-right{width:140px}
+      .device{width:140px;height:200px}
+      .brand{font-size:20px}
+      .wrap{padding:12px}
+    }
+
+    /* subtle hover */
+    .btn:hover{transform:translateY(-2px)}
+    .tiny:hover{background:rgba(255,255,255,0.04)}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-left">
+        <h1 class="title">Convert Images to PDF — Fast & Private</h1>
+        <p class="lead">Drag & drop photos, reorder pages, and download a single PDF — everything runs locally in your browser. No upload, no account.</p>
+        <div class="cta">
+          <button id="openFile" class="btn">Select Images</button>
+          <button id="demo" class="btn ghost">Try Demo Images</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="device"><div class="brand">HUMAN X</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="drop" class="drop" tabindex="0">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <strong style="font-size:15px">Drop images here</strong>
+          <div class="hint">Or click <span style="color:var(--accent)">Select Images</span> to browse files</div>
+          <div class="small">Supported: JPG, PNG • Rearrange pages before exporting</div>
+        </div>
+        <input id="file" type="file" accept="image/*" multiple>
+      </div>
+
+      <div class="thumbs" id="thumbs" aria-live="polite"></div>
+
+      <div class="controls">
+        <input id="filename" name="filename" placeholder="Optional: output file name (e.g. my-doc)" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);min-width:220px">
+
+        <select id="pagesize" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">
+          <option value="a0">A0</option>
+          <option value="a1">A1</option>
+          <option value="a2">A2</option>
+          <option value="a3">A3</option>
+          <option value="a4" selected>A4 (Portrait)</option>
+          <option value="a5">A5</option>
+          <option value="a6">A6</option>
+          <option value="letter">Letter</option>
+          <option value="legal">Legal</option>
+        </select>
+
+        <button id="convert" class="btn">Download PDF</button>
+        <button id="clear" class="btn tiny">Clear</button>
+      </div>
+
+      <p class="small" style="margin-top:10px;color:var(--muted)">Works offline — your images never leave your device.</p>
+    </div>
+
+    <footer>Made with care — mobile-friendly • Private • Fast</footer>
+  </div>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    // Elements
+    const fileInput = document.getElementById('file');
+    const drop = document.getElementById('drop');
+    const thumbs = document.getElementById('thumbs');
+    const convertBtn = document.getElementById('convert');
+    const clearBtn = document.getElementById('clear');
+    const openFileBtn = document.getElementById('openFile');
+    const demoBtn = document.getElementById('demo');
+    const filenameInput = document.getElementById('filename');
+    const pageSizeSelect = document.getElementById('pagesize');
+
+    let images = [];
+
+    // helpers
+    const pxToMm = px => px * 25.4 / 96;
+    const safeFilename = name => name.replace(/[^a-z0-9-_\.]/ig, '_') || 'images-to-pdf';
+
+    // open file picker
+    openFileBtn.addEventListener('click', () => fileInput.click());
+    demoBtn.addEventListener('click', addDemoImages);
+
+    // drag & drop
+    ['dragenter','dragover','dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }));
+    drop.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+    function handleFiles(list){
+      const files = Array.from(list).filter(f => f.type && f.type.startsWith('image/'));
+      files.forEach(f => {
+        const reader = new FileReader();
+        reader.onload = e => { images.push({name: f.name, data: e.target.result}); renderThumbs(); };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    function renderThumbs(){
+      thumbs.innerHTML = '';
+      images.forEach((img, idx) => {
+        const el = document.createElement('div'); el.className='thumb';
+        el.innerHTML = `<img src="${img.data}" alt="${img.name}"><div class='name'>${img.name}</div><div class='row'><button class='tiny' data-idx='${idx}' data-action='up'>⬆</button><button class='tiny' data-idx='${idx}' data-action='down'>⬇</button><button class='tiny' data-idx='${idx}' data-action='remove'>✖</button></div>`;
+        thumbs.appendChild(el);
+      });
+      // attach
+      thumbs.querySelectorAll('button').forEach(b => b.addEventListener('click', thumbAction));
+    }
+
+    function thumbAction(e){
+      const idx = Number(e.currentTarget.dataset.idx);
+      const action = e.currentTarget.dataset.action;
+      if(action === 'up' && idx>0){ [images[idx-1], images[idx]] = [images[idx], images[idx-1]]; }
+      if(action === 'down' && idx < images.length-1){ [images[idx+1], images[idx]] = [images[idx], images[idx+1]]; }
+      if(action === 'remove'){ images.splice(idx,1); }
+      renderThumbs();
+    }
+
+    clearBtn.addEventListener('click', () => { images = []; renderThumbs(); filenameInput.value = ''; fileInput.value = ''; });
+
+    async function convertToPdf(){
+      if(images.length === 0){ alert('Please add at least one image.'); return; }
+      convertBtn.disabled = true; convertBtn.textContent = 'Preparing...';
+      try{
+        const { jsPDF } = window.jspdf;
+        const pageMapping = {
+          a0:{w:841,h:1189}, a1:{w:594,h:841}, a2:{w:420,h:594}, a3:{w:297,h:420}, a4:{w:210,h:297}, a5:{w:148,h:210}, a6:{w:105,h:148},
+          letter:{w:215.9,h:279.4}, legal:{w:215.9,h:355.6}
+        };
+        const chosen = pageMapping[pageSizeSelect.value] || pageMapping.a4;
+        const pdf = new jsPDF({ unit:'mm', format:[chosen.w, chosen.h] });
+
+        for(let i=0;i<images.length;i++){
+          const img = images[i];
+          await new Promise(res => {
+            const image = new Image();
+            image.onload = () => {
+              const iw = image.naturalWidth, ih = image.naturalHeight;
+              const pageW = chosen.w - 20, pageH = chosen.h - 20;
+              const imgWmm = pxToMm(iw), imgHmm = pxToMm(ih);
+              const scale = Math.min(pageW / imgWmm, pageH / imgHmm, 1);
+              const drawW = imgWmm * scale, drawH = imgHmm * scale;
+              const x = (chosen.w - drawW) / 2, y = (chosen.h - drawH) / 2;
+              if(i>0) pdf.addPage();
+              const fmt = img.data.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+              pdf.addImage(img.data, fmt, x, y, drawW, drawH);
+              res();
+            };
+            image.onerror = () => { console.warn('image load failed', img.name); res(); };
+            image.src = img.data;
+          });
+        }
+
+        const baseName = filenameInput.value.trim() || `images-to-pdf-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}`;
+        pdf.save(safeFilename(baseName) + '.pdf');
+
+      }catch(err){ console.error(err); alert('Failed to create PDF. See console.'); }
+      finally{ convertBtn.disabled = false; convertBtn.textContent = 'Download PDF'; }
+    }
+
+    convertBtn.addEventListener('click', convertToPdf);
+
+    // demo images (small colored placeholders)
+    function addDemoImages(){
+      images = [];
+      for(let i=1;i<=3;i++) images.push({name:`demo-${i}.png`, data:`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='600' height='800'><rect width='100%' height='100%' fill='${i%2?"%2360a5fa":"%236ee7b7"}'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Rubik, Poppins, Arial' font-size='48' fill='white'>Demo ${i}</text></svg>`)}`});
+      renderThumbs();
+    }
+
+    // small touch usability: focus file input when drop clicked
+    drop.addEventListener('click', () => fileInput.click());
+
+  </script>
+</body>
+</html>
